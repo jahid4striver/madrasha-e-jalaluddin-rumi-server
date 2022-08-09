@@ -22,6 +22,7 @@ async function run() {
         const categoryCollections = client.db('madrasha-e-rumi').collection('categories');
         const qaCategoryCollections = client.db('madrasha-e-rumi').collection('qa_categories');
         const boyanCollections = client.db('madrasha-e-rumi').collection('boyans');
+        const answerCollections = client.db('madrasha-e-rumi').collection('answers');
 
 
 
@@ -56,6 +57,16 @@ async function run() {
 
         app.get('/getboyans', async(req, res)=>{
             const result = await boyanCollections.find().sort({ $natural: -1 }).toArray();
+            res.send(result);
+        })
+        app.post('/addanswer', async (req, res)=>{
+            const data= req.body;
+            const result= await answerCollections.insertOne(data);
+            res.send(result);
+        });
+
+        app.get('/getanswer', async(req, res)=>{
+            const result = await answerCollections.find().sort({ $natural: -1 }).toArray();
             res.send(result);
         })
 

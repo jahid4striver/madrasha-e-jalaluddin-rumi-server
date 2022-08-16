@@ -26,46 +26,61 @@ async function run() {
 
 
 
-        app.post('/categories', async (req, res)=>{
-            const category= req.body;
-            const result= await categoryCollections.insertOne(category);
+        app.post('/categories', async (req, res) => {
+            const category = req.body;
+            const result = await categoryCollections.insertOne(category);
             res.send(result);
         });
 
-        app.get('/getcategories', async(req, res)=>{
+        app.get('/getcategories', async (req, res) => {
             const result = await categoryCollections.find().toArray();
             res.send(result);
         });
 
 
-        app.post('/qa_categories', async (req, res)=>{
-            const category= req.body;
-            const result= await qaCategoryCollections.insertOne(category);
+        app.post('/qa_categories', async (req, res) => {
+            const category = req.body;
+            const result = await qaCategoryCollections.insertOne(category);
             res.send(result);
         });
 
-        app.get('/get_qa_categories', async(req, res)=>{
+        app.get('/get_qa_categories', async (req, res) => {
             const result = await qaCategoryCollections.find().toArray();
             res.send(result);
         });
 
-        app.post('/addboyans', async (req, res)=>{
-            const data= req.body;
-            const result= await boyanCollections.insertOne(data);
+        app.post('/addboyans', async (req, res) => {
+            const data = req.body;
+            const result = await boyanCollections.insertOne(data);
             res.send(result);
         });
 
-        app.get('/getboyans', async(req, res)=>{
+        app.get('/gethomeboyans', async (req, res) => {
             const result = await boyanCollections.find().sort({ $natural: -1 }).toArray();
             res.send(result);
         })
-        app.post('/addanswer', async (req, res)=>{
-            const data= req.body;
-            const result= await answerCollections.insertOne(data);
+        app.get('/getboyans', async (req, res) => {
+            console.log(req.query);
+            const page = parseInt(req.query.page);
+            const size = parseInt(req.query.size);
+            const query = {};
+            const cursor = boyanCollections.find(query).sort({ $natural: -1 });
+
+            let boyans;
+            if (page || size) {
+                boyans = await cursor.skip(page * size).limit(size).toArray()
+            } else {
+                boyans = await cursor.toArray()
+            }
+            res.send(boyans);
+        })
+        app.post('/addanswer', async (req, res) => {
+            const data = req.body;
+            const result = await answerCollections.insertOne(data);
             res.send(result);
         });
 
-        app.get('/getanswer', async(req, res)=>{
+        app.get('/getanswer', async (req, res) => {
             const result = await answerCollections.find().sort({ $natural: -1 }).toArray();
             res.send(result);
         })

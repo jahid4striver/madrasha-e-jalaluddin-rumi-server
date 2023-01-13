@@ -20,9 +20,11 @@ async function run() {
     try {
         await client.connect();
         const categoryCollections = client.db('madrasha-e-rumi').collection('categories');
+        const subjectCollections = client.db('madrasha-e-rumi').collection('subjects');
         const qaCategoryCollections = client.db('madrasha-e-rumi').collection('qa_categories');
         const boyanCollections = client.db('madrasha-e-rumi').collection('boyans');
         const answerCollections = client.db('madrasha-e-rumi').collection('answers');
+        const kobitaCollections = client.db('madrasha-e-rumi').collection('kobitas');
 
 
 
@@ -34,6 +36,16 @@ async function run() {
 
         app.get('/getcategories', async (req, res) => {
             const result = await categoryCollections.find().toArray();
+            res.send(result);
+        });
+        app.post('/addsubjects', async (req, res) => {
+            const subject = req.body;
+            const result = await subjectCollections.insertOne(subject);
+            res.send(result);
+        });
+
+        app.get('/getsubjects', async (req, res) => {
+            const result = await subjectCollections.find().toArray();
             res.send(result);
         });
 
@@ -82,6 +94,16 @@ async function run() {
 
         app.get('/getanswer', async (req, res) => {
             const result = await answerCollections.find().sort({ $natural: -1 }).toArray();
+            res.send(result);
+        })
+        app.post('/addkobita', async (req, res) => {
+            const data = req.body;
+            const result = await kobitaCollections.insertOne(data);
+            res.send(result);
+        });
+
+        app.get('/getkobita', async (req, res) => {
+            const result = await kobitaCollections.find().sort({ $natural: -1 }).toArray();
             res.send(result);
         })
 

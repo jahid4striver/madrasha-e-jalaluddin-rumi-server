@@ -2,7 +2,7 @@ const express = require("express");
 const cors = require('cors');
 const app = express();
 const port = process.env.PORT || 5000;
-const { MongoClient, ServerApiVersion } = require('mongodb');
+const { MongoClient, ServerApiVersion, ObjectId } = require('mongodb');
 
 app.use(cors());
 app.use(express.json());
@@ -25,6 +25,10 @@ async function run() {
         const boyanCollections = client.db('madrasha-e-rumi').collection('boyans');
         const answerCollections = client.db('madrasha-e-rumi').collection('answers');
         const kobitaCollections = client.db('madrasha-e-rumi').collection('kobitas');
+        const liveCollections = client.db('madrasha-e-rumi').collection('islive');
+        const latestCollections = client.db('madrasha-e-rumi').collection('latest');
+        const queryCollections = client.db('madrasha-e-rumi').collection('querys');
+        const userCollections = client.db('madrasha-e-rumi').collection('users');
 
 
 
@@ -86,6 +90,25 @@ async function run() {
             }
             res.send(boyans);
         })
+        app.put('/getboyans/:id', async (req, res) => {
+            const id = req.params.id;
+            const boyan = req.body;
+            const filter = { _id: ObjectId(id) };
+            const options = { upsert: true };
+            const updateDoc = {
+                $set: boyan
+            }
+            const updatedBoyan = await boyanCollections.updateOne(filter, updateDoc, options);
+            res.send(updatedBoyan);
+        })
+
+        app.delete('/getboyans/:id', async (req, res) => {
+            const id = req.params.id;
+            const filter = { _id: ObjectId(id) }
+            const result = await boyanCollections.deleteOne(filter);
+            res.send(result);
+        })
+
         app.post('/addanswer', async (req, res) => {
             const data = req.body;
             const result = await answerCollections.insertOne(data);
@@ -96,6 +119,25 @@ async function run() {
             const result = await answerCollections.find().sort({ $natural: -1 }).toArray();
             res.send(result);
         })
+        app.put('/getanswer/:id', async (req, res) => {
+            const id = req.params.id;
+            const boyan = req.body;
+            const filter = { _id: ObjectId(id) };
+            const options = { upsert: true };
+            const updateDoc = {
+                $set: boyan
+            }
+            const updatedBoyan = await answerCollections.updateOne(filter, updateDoc, options);
+            res.send(updatedBoyan);
+        })
+
+        app.delete('/getanswer/:id', async (req, res) => {
+            const id = req.params.id;
+            const filter = { _id: ObjectId(id) }
+            const result = await answerCollections.deleteOne(filter);
+            res.send(result);
+        })
+
         app.post('/addkobita', async (req, res) => {
             const data = req.body;
             const result = await kobitaCollections.insertOne(data);
@@ -107,7 +149,72 @@ async function run() {
             res.send(result);
         })
 
+        app.put('/getkobita/:id', async (req, res) => {
+            const id = req.params.id;
+            const boyan = req.body;
+            const filter = { _id: ObjectId(id) };
+            const options = { upsert: true };
+            const updateDoc = {
+                $set: boyan
+            }
+            const updatedBoyan = await kobitaCollections.updateOne(filter, updateDoc, options);
+            res.send(updatedBoyan);
+        })
 
+        app.delete('/getkobita/:id', async (req, res) => {
+            const id = req.params.id;
+            const filter = { _id: ObjectId(id) }
+            const result = await kobitaCollections.deleteOne(filter);
+            res.send(result);
+        })
+
+        app.get('/getlive', async (req, res) => {
+            const result = await liveCollections.find().toArray();
+            res.send(result);
+        })
+
+        app.put('/getlive/:id', async (req, res) => {
+            const id = req.params.id;
+            const live = req.body;
+            const filter = { _id: ObjectId(id) };
+            const options = { upsert: true };
+            const updateDoc = {
+                $set: live
+            }
+            const updatedLive = await liveCollections.updateOne(filter, updateDoc, options);
+            res.send(updatedLive);
+        })
+
+        app.post('/latest', async (req, res) => {
+            const latest = req.body;
+            const result = await latestCollections.insertOne(latest);
+            res.send(result);
+        });
+
+        app.get('/getlatest', async (req, res) => {
+            const result = await latestCollections.find().toArray();
+            res.send(result);
+        });
+        app.post('/query', async (req, res) => {
+            const query = req.body;
+            const result = await queryCollections.insertOne(query);
+            res.send(result);
+        });
+
+        app.get('/getquery', async (req, res) => {
+            const result = await queryCollections.find().toArray();
+            res.send(result);
+        });
+        app.post('/users', async (req, res) => {
+            const users = req.body;
+            const result = await userCollections.insertOne(users);
+            res.send(result);
+        });
+
+        app.get('/getuser', async (req, res) => {
+            const result = await userCollections.find().toArray();
+            res.send(result);
+        });
 
 
 

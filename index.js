@@ -24,11 +24,15 @@ async function run() {
         const qaCategoryCollections = client.db('madrasha-e-rumi').collection('qa_categories');
         const boyanCollections = client.db('madrasha-e-rumi').collection('boyans');
         const answerCollections = client.db('madrasha-e-rumi').collection('answers');
+        const shortCollections = client.db('madrasha-e-rumi').collection('shorts');
         const kobitaCollections = client.db('madrasha-e-rumi').collection('kobitas');
         const liveCollections = client.db('madrasha-e-rumi').collection('islive');
         const latestCollections = client.db('madrasha-e-rumi').collection('latest');
         const queryCollections = client.db('madrasha-e-rumi').collection('querys');
         const userCollections = client.db('madrasha-e-rumi').collection('users');
+        const noticeCollections = client.db('madrasha-e-rumi').collection('notices');
+        const bookCollections = client.db('madrasha-e-rumi').collection('books');
+        const recitationCollections = client.db('madrasha-e-rumi').collection('recitations');
 
 
 
@@ -101,6 +105,16 @@ async function run() {
             const updatedBoyan = await boyanCollections.updateOne(filter, updateDoc, options);
             res.send(updatedBoyan);
         })
+        app.patch('/getboyans/:id', async (req, res) => {
+            const id = req.params.id;
+            const update = req.body;
+            const filter = { _id: ObjectId(id) };
+            const updateDoc = {
+                $set: update
+            }
+            const updatedBoyan = await boyanCollections.updateOne(filter, updateDoc);
+            res.send(updatedBoyan);
+        })
 
         app.delete('/getboyans/:id', async (req, res) => {
             const id = req.params.id;
@@ -129,6 +143,16 @@ async function run() {
             }
             const updatedBoyan = await answerCollections.updateOne(filter, updateDoc, options);
             res.send(updatedBoyan);
+        })
+        app.patch('/getanswer/:id', async (req, res) => {
+            const id = req.params.id;
+            const update = req.body;
+            const filter = { _id: ObjectId(id) };
+            const updateDoc = {
+                $set: update
+            }
+            const updatedAnswers = await answerCollections.updateOne(filter, updateDoc);
+            res.send(updatedAnswers);
         })
 
         app.delete('/getanswer/:id', async (req, res) => {
@@ -160,11 +184,60 @@ async function run() {
             const updatedBoyan = await kobitaCollections.updateOne(filter, updateDoc, options);
             res.send(updatedBoyan);
         })
+        app.patch('/getkobita/:id', async (req, res) => {
+            const id = req.params.id;
+            const update = req.body;
+            const filter = { _id: ObjectId(id) };
+            const updateDoc = {
+                $set: update
+            }
+            const updatedKobita = await kobitaCollections.updateOne(filter, updateDoc);
+            res.send(updatedKobita);
+        })
 
         app.delete('/getkobita/:id', async (req, res) => {
             const id = req.params.id;
             const filter = { _id: ObjectId(id) }
             const result = await kobitaCollections.deleteOne(filter);
+            res.send(result);
+        })
+        app.post('/addshort', async (req, res) => {
+            const data = req.body;
+            const result = await shortCollections.insertOne(data);
+            res.send(result);
+        });
+
+        app.get('/getshorts', async (req, res) => {
+            const result = await shortCollections.find().sort({ $natural: -1 }).toArray();
+            res.send(result);
+        })
+
+        app.put('/getshort/:id', async (req, res) => {
+            const id = req.params.id;
+            const short = req.body;
+            const filter = { _id: ObjectId(id) };
+            const options = { upsert: true };
+            const updateDoc = {
+                $set: short
+            }
+            const updatedShort = await shortCollections.updateOne(filter, updateDoc, options);
+            res.send(updatedShort);
+        })
+        app.patch('/getshort/:id', async (req, res) => {
+            const id = req.params.id;
+            const update = req.body;
+            const filter = { _id: ObjectId(id) };
+            const updateDoc = {
+                $set: update
+            }
+            const updatedShort = await shortCollections.updateOne(filter, updateDoc);
+            res.send(updatedShort);
+        })
+
+        app.delete('/getshort/:id', async (req, res) => {
+            const id = req.params.id;
+            const filter = { _id: ObjectId(id) }
+            const result = await shortCollections.deleteOne(filter);
             res.send(result);
         })
 
@@ -192,16 +265,16 @@ async function run() {
         });
 
         app.get('/getlatest', async (req, res) => {
-            const result = await latestCollections.find().toArray();
+            const result = await latestCollections.find().sort({ $natural: -1 }).toArray();
             res.send(result);
         });
-        app.post('/query', async (req, res) => {
+        app.post('/querys', async (req, res) => {
             const query = req.body;
             const result = await queryCollections.insertOne(query);
             res.send(result);
         });
 
-        app.get('/getquery', async (req, res) => {
+        app.get('/getquerys', async (req, res) => {
             const result = await queryCollections.find().toArray();
             res.send(result);
         });
@@ -215,6 +288,65 @@ async function run() {
             const result = await userCollections.find().toArray();
             res.send(result);
         });
+        app.post('/notices', async (req, res) => {
+            const notices = req.body;
+            const result = await noticeCollections.insertOne(notices);
+            res.send(result);
+        });
+
+        app.get('/getnotices', async (req, res) => {
+            const result = await noticeCollections.find().sort({ $natural: -1 }).toArray();
+            res.send(result);
+        });
+        app.post('/books', async (req, res) => {
+            const books = req.body;
+            const result = await bookCollections.insertOne(books);
+            res.send(result);
+        });
+
+        app.get('/getbooks', async (req, res) => {
+            const result = await bookCollections.find().sort({ $natural: -1 }).toArray();
+            res.send(result);
+        });
+        app.post('/recitation', async (req, res) => {
+            const recitations = req.body;
+            const result = await recitationCollections.insertOne(recitations);
+            res.send(result);
+        });
+
+        app.get('/getrecitation', async (req, res) => {
+            const result = await recitationCollections.find().sort({ $natural: -1 }).toArray();
+            res.send(result);
+        });
+
+        app.put('/getrecitation/:id', async (req, res) => {
+            const id = req.params.id;
+            const recitation = req.body;
+            const filter = { _id: ObjectId(id) };
+            const options = { upsert: true };
+            const updateDoc = {
+                $set: recitation
+            }
+            const updatedRecitation = await recitationCollections.updateOne(filter, updateDoc, options);
+            res.send(updatedRecitation);
+        })
+        app.patch('/getrecitation/:id', async (req, res) => {
+            const id = req.params.id;
+            const update = req.body;
+            const filter = { _id: ObjectId(id) };
+            const updateDoc = {
+                $set: update
+            }
+            const updatedRecitation = await recitationCollections.updateOne(filter, updateDoc);
+            res.send(updatedRecitation);
+        })
+
+        app.delete('/getrecitation/:id', async (req, res) => {
+            const id = req.params.id;
+            const filter = { _id: ObjectId(id) }
+            const result = await recitationCollections.deleteOne(filter);
+            res.send(result);
+        })
 
 
 
